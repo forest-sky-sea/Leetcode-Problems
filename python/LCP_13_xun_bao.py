@@ -86,14 +86,15 @@ class Solution:
                 dist_o_m.append([dist_o[maze_m[0]][maze_m[1]] for maze_m in maze_ms])
             dist_s_o_m = [[dist_o_m[i][j] + dist_s_o[i]
                            for j in range(len(maze_ms))] for i in range(len(maze_os))]
+            # find min o for all s -> m (o's index, dist)
             dist_s_m = []
             for i in range(len(maze_ms)):
                 tmp_dist = [dist_s_o_m[j][i] for j in range(len(maze_os))]
                 dist_s_m.append((tmp_dist.index(min(tmp_dist)), min(tmp_dist)))
             # dist_s_m = list(zip(np.argmin(dist_s_o_m, 0), (np.min(dist_s_o_m, 0))))
             # m -> o -> m
+            # find min o for all m -> m (o's index, dist)
             dist_m_m = [[(-1, 0) for _ in range(len(maze_ms))] for _ in range(len(maze_ms))]
-            dist_m_o_m = []
             for i in range(len(maze_ms)):
                 for j in range(i + 1, len(maze_ms)):
                     dist_m_o_m = [dist_o_m[k][i] + dist_o_m[k][j] for k in range(len(maze_os))]
@@ -103,28 +104,40 @@ class Solution:
             dist_m = find_paths(maze_t, maze_ms)
             dist_m_t = [dist_m[maze_m[0]][maze_m[1]] for maze_m in maze_ms]
 
-            del dist_m, dist_m_o_m, dist_o, dist_o_m, dist_s, dist_s_o, dist_s_o_m, maze_o
+            del dist_m, dist_m_o_m, dist_o, dist_o_m, dist_s,\
+                dist_s_o, dist_s_o_m, maze_o, tmp_dist
 
             # traverse all paths
             def traverse_all_paths(cur_m, remain_m):
+                # return M -> T
                 if not remain_m:
-                    return [dist_m_t[cur_m]]
+                    return dist_m_t[cur_m]
                 else:
-                    res_l = []
-                    for m in remain_m:
-                        tmp_m = remain_m.copy()
-                        tmp_m.remove(m)
-                        res_l.extend([cur_i + dist_m_m[m][cur_m][1]
-                                      for cur_i in traverse_all_paths(m, tmp_m)])
-                    # print(res_l)
-                    return res_l
+                    sub_dist = []
+                    # check dynamic programming cache
+                    if str(remain_m) in dp_cache.keys():
+                        sub_dist = dp_cache[str(remain_m)]
+                    else:
+                        for m in remain_m:
+                            next_remain_m = remain_m.copy()
+                            next_remain_m.remove(m)
+                            sub_dist.append(traverse_all_paths(m, next_remain_m))
+                        dp_cache[str(remain_m)] = sub_dist
+                    res_dist = []
+                    # min dist = min(dist of cur_m -> each travers m)
+                    for i_m, m in enumerate(remain_m):
+                        res_dist.append(dist_m_m[m][cur_m][1] + sub_dist[i_m])
+
+                    return min(res_dist)
 
             maze_ms_index = list(range(len(maze_ms)))
+            dp_cache = {}
             res = []
+            # S -> first M
             for i in maze_ms_index:
-                tmp = maze_ms_index.copy()
-                tmp.remove(i)
-                res.extend([dist_i + dist_s_m[i][1] for dist_i in traverse_all_paths(i, tmp)])
+                remain_i = maze_ms_index.copy()
+                remain_i.remove(i)
+                res.append(dist_s_m[i][1] + traverse_all_paths(i, remain_i))
         return min(res) if min(res) < max_value else -1
 
 
