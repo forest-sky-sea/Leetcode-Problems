@@ -13,6 +13,7 @@
 > 可以使用dict查找，但是发现不如find函数快
 
 ### 4. Median of Two Sorted Arrays
-核心思想：最均衡的情况下，其中一个数组的median//2位置刚好是median，另一个数组的median//2位置是median-1。  
-否则，当其中一个数组>median的数更多就会导致另一个数组<median的数更多，这样median//2较小的部分也一定是<median的。
+核心思想：  
+最均衡的情况下，其中一个数组的median//2位置刚好是median，另一个数组的median//2位置是median-1。  
+否则，当其中一个数组>median的数更多就会导致另一个数组<median的数更多，这样median//2较小的部分也一定是<median的。  
 因此每次二分都可以直接去除median//2较小的部分。
