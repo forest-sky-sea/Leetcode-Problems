@@ -14,22 +14,22 @@ class Solution:
     def cloneGraph(self, node: 'Node') -> 'Node':
         if not node:
             return None
-        ori_queue = deque([node])
+        queue = deque([node])
         res_root = Node(node.val)
-        res_queue = deque([res_root])
+        # res_queue = deque([res_root])
         traversed = {node.val: res_root}
-        while ori_queue:
-            ori_cur = ori_queue.popleft()
-            res_cur = res_queue.popleft()
-            for neighbor in ori_cur.neighbors:
+        while queue:
+            cur = queue.popleft()
+            # res_cur = res_queue.popleft()
+            for neighbor in cur.neighbors:
                 if neighbor.val in traversed.keys():
                     res_neighbor = traversed[neighbor.val]
                 else:
                     res_neighbor = Node(neighbor.val)
                     traversed[neighbor.val] = res_neighbor
-                    ori_queue.append(neighbor)
-                    res_queue.append(res_neighbor)
-                res_cur.neighbors.append(res_neighbor)
+                    queue.append(neighbor)
+                    # res_queue.append(res_neighbor)
+                traversed[cur.val].neighbors.append(res_neighbor)
         return res_root
 
 
