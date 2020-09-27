@@ -13,6 +13,8 @@ class Solution:
     def buildTree(self, inorder: List[int], postorder: List[int]) -> TreeNode:
         if not postorder:
             return None
+        if len(postorder) == 1:
+            return TreeNode(postorder[0])
         root_val = postorder[-1]
         root = TreeNode(root_val)
         root_ind = inorder.index(root_val)
