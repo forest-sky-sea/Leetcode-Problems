@@ -1,4 +1,4 @@
-def lengthOfLongestSubstring(s: str):
+def lengthOfLongestSubstring2(s: str):
     if len(s) == 0:
         return 0
     max_l = 0
@@ -20,5 +20,23 @@ def lengthOfLongestSubstring(s: str):
     return max_l
 
 
+def lengthOfLongestSubstring(s: str):
+    if len(s) == 0:
+        return 0
+    res = 1
+
+    tail = 1
+    char_set = set(s[0])
+    for head in range(len(s)):
+        while tail < len(s) and s[tail] not in char_set:
+            char_set.add(s[tail])
+            tail += 1
+        res = max(res, tail - head)
+        char_set.remove(s[head])
+
+    return res
+
+
+print(lengthOfLongestSubstring('pppkpw'))
 print(lengthOfLongestSubstring('pwwkpw'))
 print(lengthOfLongestSubstring('abba'))
